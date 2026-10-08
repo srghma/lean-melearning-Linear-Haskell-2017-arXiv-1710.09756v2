@@ -126,7 +126,7 @@
 %
 %
 % This package provides two environments suitable to take the place
-% of hscode, called "plainhscode" and "arrayhscode". 
+% of hscode, called "plainhscode" and "arrayhscode".
 %
 % The plain environment surrounds each code block by vertical space,
 % and it uses \abovedisplayskip and \belowdisplayskip to get spacing
@@ -216,8 +216,8 @@
 
 \newcommand{\arrayhs}{\sethscode{arrayhscode}}
 
-% The mathhscode environment also makes use of polytable's parray 
-% environment. It is supposed to be used only inside math mode 
+% The mathhscode environment also makes use of polytable's parray
+% environment. It is supposed to be used only inside math mode
 % (I used it to typeset the type rules in my thesis).
 
 \newenvironment{mathhscode}%
@@ -359,7 +359,7 @@
 \usepackage{xargs}
 \usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
 % ^^ Need for pgfsyspdfmark apparently?
-\ifx\noeditingmarks\undefined    
+\ifx\noeditingmarks\undefined
     \setlength{\marginparwidth}{1.2cm} % Here's a size that matches the new PACMPL format -RRN
     \newcommand{\Red}[1]{{\color{red}{#1}}}
     \newcommand{\newaudit}[1]{{\color{blue}{#1}}}
@@ -548,7 +548,7 @@
   To demonstrate the efficacy of our linear type system~---~both how
   easy it can be integrated in an existing language implementation and
   how streamlined it makes it to write programs with linear
-  types~---~we implemented our type system in 
+  types~---~we implemented our type system in
   \textsc{ghc}, the leading Haskell compiler, and demonstrate
   two kinds of applications of linear types:
   mutable data with pure interfaces;
@@ -556,7 +556,7 @@
 \end{abstract}
 
 %% \if@ACM@review
-\ifx\draftmode\undefined    
+\ifx\draftmode\undefined
 %% 2012 ACM Computing Classification System (CSS) concepts
 %% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
 \begin{CCSXML}\begin{hscode}\SaveRestoreHook
@@ -896,11 +896,11 @@ There are several things to note here:
 \item Because \ensuremath{\Varid{freeze}} consumes its input, there is no danger of the same
   mutable array being subsequently written to, eliminating the problem with
   \ensuremath{\Varid{unsafeFreeze}}.
-  
+
 \item Since \ensuremath{\Varid{ma}} is linear, we can only use it once. Thus each call to
   \ensuremath{\Varid{write}} returns a (logically) new array, so that the array is single-threaded,
   by \ensuremath{\Varid{foldl}}, through the sequence of writes.
-  
+
 \item Above, \ensuremath{\Varid{foldl}} has the type \ensuremath{(\Varid{a}\mathbin{⊸}\Varid{b}\mathbin{⊸}\Varid{a})\to \Varid{a}\mathbin{⊸}[\mskip1.5mu \Varid{b}\mskip1.5mu]\mathbin{⊸}\Varid{a}},
 which expresses that it consumes its second argument linearly
 (the mutable array), while the function it is given as
@@ -945,8 +945,8 @@ in particular, they must not lie about linearity. Our second use-case has a much
 
 \begin{figure}
   % \vspace{-4mm}
-\begin{minipage}{0.40 \textwidth} 
-%  \begin{framed}   
+\begin{minipage}{0.40 \textwidth}
+%  \begin{framed}
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{3}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -1724,7 +1724,7 @@ of $c_k$ is used non-linearly in $u_k$.  Then, $μ_i=1$ (it is a linear field),
 so $π$ must be $ω$, so that $πμ_i=ω$.  In short, using a linear field non-linearly
 forces the scrutinee to be used non-linearly, which is just what we want.
 Here are some concrete examples:
-\begin{center}\vspace{-3mm}  
+\begin{center}\vspace{-3mm}
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{3}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -1982,7 +1982,7 @@ mechanism to linear types.
 
 \paragraph{Polymorphism \& multiplicities} Consider the definition: ``\ensuremath{\Varid{id}\;\Varid{x}\mathrel{=}\Varid{x}}''.
 %% \begin{code}
-%% id x = x  
+%% id x = x
 %% \end{code}
 Our typing rules would validate both \ensuremath{\Varid{id}\mathbin{::}\Conid{Int}\mathbin{→}\Conid{Int}} and \ensuremath{\Varid{id}\mathbin{::}\Conid{Int}\mathbin{⊸}\Conid{Int}}.
 So, since we think of multiplicities ranging over $\{1,ω\}$, surely we should
@@ -2308,7 +2308,7 @@ We also need to explicitly let go of linear input buffers we've exhausted.
 
 The primitives \ensuremath{\Varid{write}}, \ensuremath{\Varid{read}}, \ensuremath{\Varid{newBuffer}}, \ensuremath{\Varid{done}}, and \ensuremath{\Varid{finish}} are {\em general}
 operations for serialised data, whereas \ensuremath{\Varid{caseTree}} is datatype-specific.
-Further, the module that defines \ensuremath{\Conid{Tree}} exports a datatype-specific way to 
+Further, the module that defines \ensuremath{\Conid{Tree}} exports a datatype-specific way to
 {\em write} each serialised data constructor:
 %
 % startFoo :: Needs (Foo:r) t ⊸ Needs (Int:Double:r) t
@@ -2457,7 +2457,7 @@ Finally, as shown in \fref{fig:pack-bench}, there are some unexpected
 performance consequences from using a linear versus a monadic, ST style in
 \ghc.
 %
-Achieving allocation-free loops in \ghc{} is always a challenge --- 
+Achieving allocation-free loops in \ghc{} is always a challenge ---
 tuple types and numeric types are lazy and ``boxed'' as heap objects by default.
 %
 As we saw in the \ensuremath{\Varid{sumLeaves}} and \ensuremath{\Varid{mapLeaves}} examples, each recursive call returned a tuple
@@ -2476,7 +2476,7 @@ fills two registers and inhabits an unboxed kind distinct from \ensuremath{\math
 %
 In fact, the type of a combinator like \ensuremath{\Varid{caseTree}} is a good fit for the recent
 ``levity polymorphism'' addition to
-\ghc{}~\cite{eisenberg_levity_2017}.  
+\ghc{}~\cite{eisenberg_levity_2017}.
 Thus we permit the branches of the \ensuremath{\mathbf{case}} to return unlifted, unboxed types, and
 give \ensuremath{\Varid{caseTree}} a more general type:
 {
