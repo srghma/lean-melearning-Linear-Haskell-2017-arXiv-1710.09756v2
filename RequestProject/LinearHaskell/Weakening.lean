@@ -14,14 +14,25 @@ namespace LinearHaskell
 
 variable {S : Sig}
 
-theorem Typed.ofEq {E : TyEnv} {U U' : Usage} {t : Tm} {A : Ty} (h : Typed S E U t A)
-    (hU : U = U') : Typed S E U' t A := hU ▸ h
+theorem Typed.ofEq {m n : ℕ} {E : TyEnv S m n} {U U' : Usage m n} {t : Tm S m n} {A : Ty S m}
+    (h : Typed S E U t A) (hU : U = U') : Typed S E U' t A := hU ▸ h
 
-theorem Typed.ofEqTy {E : TyEnv} {U : Usage} {t : Tm} {A A' : Ty} (h : Typed S E U t A)
-    (hA : A = A') : Typed S E U t A' := hA ▸ h
+theorem Typed.ofEqTy {m n : ℕ} {E : TyEnv S m n} {U : Usage m n} {t : Tm S m n} {A A' : Ty S m}
+    (h : Typed S E U t A) (hA : A = A') : Typed S E U t A' := hA ▸ h
 
-theorem Typed.weaken {E : TyEnv} {U : Usage} {t : Tm} {A : Ty} (h : Typed S E U t A) :
-    ∀ V : Usage, Typed S E (U + ω' • V) t A := by
+theorem Typed.ofEqEnv {m n : ℕ} {E E' : TyEnv S m n} {U : Usage m n} {t : Tm S m n} {A : Ty S m}
+    (h : Typed S E U t A) (hE : E = E') : Typed S E' U t A := hE ▸ h
+
+theorem MZ.shift_add {m : ℕ} (a b : MZ m) : MZ.shift (a + b) = MZ.shift a + MZ.shift b :=
+  MZ.bind_add _ a b
+
+theorem MZ.shift_mul {m : ℕ} (a b : MZ m) : MZ.shift (a * b) = MZ.shift a * MZ.shift b :=
+  MZ.bind_mul _ a b
+
+@[simp] theorem MZ.shift_omega {m : ℕ} : MZ.shift (ω' : MZ m) = ω' := rfl
+
+theorem Typed.weaken {m n : ℕ} {E : TyEnv S m n} {U : Usage m n} {t : Tm S m n} {A : Ty S m}
+    (h : Typed S E U t A) : ∀ V : Usage m n, Typed S E (U + (ω' : MZ m) • V) t A := by
   induction h with
   | var Γ x =>
     intro V
@@ -29,35 +40,34 @@ theorem Typed.weaken {E : TyEnv} {U : Usage} {t : Tm} {A : Ty} (h : Typed S E U 
     rw [smul_add]; abel
   | abs _ ih =>
     intro V
-    refine Typed.abs ((ih (prep [0] V)).ofEq ?_)
-    rw [smul_prep, ← prep_add_zeros]
+    refine Typed.abs ((ih (Fin.append V 0)).ofEq ?_)
+    rw [smul_append, append_add]
     simp
   | app _ _ ih₁ _ =>
     intro V
     refine (Typed.app (ih₁ V) ‹_›).ofEq ?_
     abel
-  | con Γ Δ hp hk hl _ _ =>
+  | con Γ ps Δ hts _ =>
     intro V
-    refine (Typed.con (Γ + V) Δ hp hk hl ‹_›).ofEq ?_
+    refine (Typed.con (Γ + V) ps Δ hts).ofEq ?_
     rw [smul_add]; abel
-  | @case E Γ Δ π t D ps bs C ht hl hn _ _ ih =>
+  | @case m n E Γ Δ π t D ps bs C ht _ _ ih =>
     intro V
-    refine (Typed.case (Δ := Δ + ω' • V) ht hl hn (fun k hk => (ih k hk (prep (List.replicate
-      (S.fieldTys D k ps).length 0) V)).ofEq ?_)).ofEq ?_
-    · rw [smul_prep, ← prep_add_zeros]
-      simp [Sig.fieldTys, Sig.fieldMults]
+    refine (Typed.case (Δ := Δ + (ω' : MZ m) • V) ht (fun k => (ih k (Fin.append V 0)).ofEq ?_)).ofEq ?_
+    · rw [smul_append, append_add]
+      simp
     · abel
-  | @letin E Δ π bs u C Γ _ _ _ ih =>
+  | @letin m n E Δ π j As ts u C Γ hts _ _ ih =>
     intro V
-    refine (Typed.letin (Δ := Δ + ω' • V) Γ ‹_› ((ih (prep (List.replicate bs.length 0) V)).ofEq ?_)).ofEq ?_
-    · rw [smul_prep, ← prep_add_zeros]
+    refine (Typed.letin (Δ := Δ + (ω' : MZ m) • V) Γ hts ((ih (Fin.append V 0)).ofEq ?_)).ofEq ?_
+    · rw [smul_append, append_add]
       simp
     · abel
   | mabs _ ih =>
     intro V
-    refine Typed.mabs ((ih (MZ.bind mshiftσ ∘ V)).ofEq ?_)
+    refine Typed.mabs ((ih (MZ.shift ∘ V)).ofEq ?_)
     funext i
-    simp [MZ.bind_add, MZ.bind_mul]
+    simp [MZ.shift_add, MZ.shift_mul]
   | mapp π _ ih =>
     intro V
     exact Typed.mapp π (ih V)
